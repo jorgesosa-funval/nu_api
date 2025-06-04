@@ -18,7 +18,7 @@ Events.init(
        *   - Define este campo como la clave primaria de la tabla. 🗂️
        */
 
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     }, 

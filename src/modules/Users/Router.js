@@ -19,7 +19,7 @@
  * @requires ./Controller.js
  */
 import { Router } from "express";
-import { index, show, store, update, destroy, profile, restore, changePassword } from "./Controller.js";
+import { index, show, update, destroy, profile, restore, changePassword } from "./Controller.js";
 
 export const usersRouter = Router();
 
