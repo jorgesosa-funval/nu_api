@@ -2,7 +2,17 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import { sequelize } from "../../database/sequelize.js";
 
 export class Users extends Model {}
+/* Nombres 
 
+apellidos
+
+email 
+
+password 
+
+Direccion  
+
+Telefono  */
 Users.init(
   {
     id: {
@@ -21,11 +31,27 @@ Users.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
+    firstname: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    middlename: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     lastname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    second_lastname: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    phone_number: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -46,9 +72,16 @@ Users.init(
       defaultValue: 1,
       get() {
         const value = this.getDataValue("status");
-        return value ? "active" : "inactive";
+        return getStatusName(value);
       },
-    } 
+    },
+    role_id: {
+      type: DataTypes.BIGINT.UNSIGNED,
+      references: {
+        model: "roles",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
@@ -58,3 +91,14 @@ Users.init(
     updatedAt: "updated_at",
   }
 );
+
+function getStatusName(status) {
+  switch (status) {
+    case 1:
+      return "active";
+    case 2:
+      return "pending";
+    default:
+      return "inactive";
+  }
+}

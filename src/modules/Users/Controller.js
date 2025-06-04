@@ -3,7 +3,7 @@
  * @description Controlador para gestionar las operaciones relacionadas con los usuarios.
  */
 import { hash } from "bcrypt";
-import { Users } from "./Model.js"
+import { Users } from "./Model.js";
 
 /**
  * @description Obtiene todos los usuarios activos.
@@ -18,7 +18,7 @@ export const index = async (req, res, next) => {
     //#swagger.description = 'Obtiene todos los usuarios activos.'
     const users = await Users.findAll({
       where: { status: true },
-      attributes: { exclude: ["password"] }
+      attributes: { exclude: ["password"] },
     });
     res.status(200).json(users);
   } catch (error) {
@@ -49,50 +49,12 @@ export const show = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-/**
- * @description Crea un nuevo usuario.
- * @param {Request} req - Objeto de solicitud HTTP.
- * @param {Response} res - Objeto de respuesta HTTP.
- * @param {NextFunction} next - Función para pasar el control al siguiente middleware.
- * @returns {Promise<void>} Responde con un mensaje de éxito si el usuario es creado correctamente.
- */
-export const store = async (req, res, next) => {
-  try {
-    //#swagger.tags = ['Users']
-    //#swagger.description = 'Crea un nuevo usuario.'
-    const { name, lastname, email, password } = req.body;
-    if (!name || !lastname || !email || !password) {
-      throw { status: 400, message: "Missing fields" };
-    }
-
-    const existingUser = await Users.findOne({ where: { email: req.body.email } });
-
-    if (existingUser) {
-      throw { status: 400, message: "Email already exists" };
-    }
-
-    req.body.password = await hash(req.body.password, 10);
-
-    await Users.create(req.body, {
-      validate: true,
-    });
-
-    res.status(201).json({
-      status: "ok",
-      message: "User created successfully"
-    });
-
-  } catch (error) {
-    next(error);
-  }
-};
+}; 
 
 /**
  * @description Actualiza los datos de un usuario existente.
  * @param {Request} req - Objeto de solicitud HTTP.
- * @param {Number} req.params.id - ID del usuario a actualizar. 
+ * @param {Number} req.params.id - ID del usuario a actualizar.
  * @param {Response} res - Objeto de respuesta HTTP.
  * @param {NextFunction} next - Función para pasar el control al siguiente middleware.
  * @returns {Promise<void>} Responde con los datos actualizados del usuario.
@@ -100,12 +62,16 @@ export const store = async (req, res, next) => {
 export const update = async (req, res, next) => {
   try {
     //#swagger.tags = ['Users']
-    //#swagger.description = 'Actualiza los datos de un usuario existente.'  
-    const { name, lastname, email, password } = req.body;
-
-    if (!name && !lastname && !email && !password) {
-      throw { status: 400, message: "No data to update" };
-    }
+    //#swagger.description = 'Actualiza los datos de un usuario existente.'
+    const {
+      firstname,
+      middlename,
+      lastname,
+      second_lastname,
+      address,
+      phone_number,
+      email, 
+    } = req.body; 
 
     const users = await Users.findByPk(req.params.id);
     if (!users) {
@@ -144,13 +110,13 @@ export const destroy = async (req, res, next) => {
 };
 
 /**
-  * @description Restaura un usuario previamente desactivado.
-  * @param {Request} req - Objeto de solicitud HTTP.
-  * @param {Number} req.params.id - ID del usuario a restaurar.
-  * @param {Response} res - Objeto de respuesta HTTP.
-  * @param {NextFunction} next - Función para pasar el control al siguiente middleware.
-  * @returns {Promise<void>} Responde con los datos del usuario restaurado.
-  */
+ * @description Restaura un usuario previamente desactivado.
+ * @param {Request} req - Objeto de solicitud HTTP.
+ * @param {Number} req.params.id - ID del usuario a restaurar.
+ * @param {Response} res - Objeto de respuesta HTTP.
+ * @param {NextFunction} next - Función para pasar el control al siguiente middleware.
+ * @returns {Promise<void>} Responde con los datos del usuario restaurado.
+ */
 export const restore = async (req, res, next) => {
   try {
     //#swagger.tags = ['Users']
@@ -165,7 +131,7 @@ export const restore = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * @description Obtiene el perfil del usuario autenticado.
@@ -183,11 +149,10 @@ export const profile = async (req, res, next) => {
     }
 
     res.status(200).json(user);
-
   } catch (error) {
     next(error);
   }
-}
+};
 
 /**
  * Cambia la contraseña de un usuario autenticado.
@@ -232,8 +197,14 @@ export const changePassword = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
 
-}
-
-
-export default { index, show, store, update, destroy, restore, profile, changePassword };
+export default {
+  index,
+  show, 
+  update,
+  destroy,
+  restore,
+  profile,
+  changePassword,
+};

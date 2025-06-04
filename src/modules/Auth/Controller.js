@@ -3,8 +3,6 @@ import config from "#config/index.js";
 import jwt from "jsonwebtoken";
 import { compare, hash } from "bcrypt";
 
-
-
 /**
  * Inicia sesión un usuario autenticado.
  *
@@ -17,23 +15,25 @@ import { compare, hash } from "bcrypt";
  * @param {Object} res - Objeto de respuesta HTTP.
  * @param {Function} next - Función para pasar el control al siguiente middleware.
  * @returns {Promise<void>} Devuelve una respuesta HTTP con el estado de la autenticación.
- * 
+ *
  * @throws {Error} Si ocurre un error inesperado durante el proceso de inicio de sesión.
- * 
+ *
  * @description
  * Este controlador verifica las credenciales proporcionadas por el usuario. Si las credenciales son válidas,
  * genera un token JWT, lo almacena en una cookie segura y devuelve una respuesta exitosa. Si las credenciales
  * son inválidas o el usuario no está activo, devuelve un error de autenticación.
  */
- 
+
 async function login(req, res, next) {
   try {
-      //#swagger.tags = ['Auth']
+    //#swagger.tags = ['Auth']
     const { jwtSecret } = config;
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await Users.findOne({ where: { email } });
@@ -45,7 +45,7 @@ async function login(req, res, next) {
     if (!validPassword) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    
+
     // para 24h -> expiresIn: "24h"
     const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: "15m" });
 
@@ -63,7 +63,6 @@ async function login(req, res, next) {
       message: "Login successful",
       token,
     });
-
   } catch (error) {
     next(error);
   }
@@ -87,12 +86,21 @@ async function login(req, res, next) {
  */
 async function register(req, res, next) {
   try {
-      //#swagger.tags = ['Auth']
-    const { name, lastname, email, password } = req.body;
-
-    if (!name || !lastname || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+    //#swagger.tags = ['Auth']
+    const {
+      firstname,
+      middlename,
+      lastname,
+      second_lastname,
+      address,
+      phone_number,
+      email,
+      password,
+      status,
+      role_id,
+    } = req.body;
+    req.body.status = 2;
+    req.body.role_id = 2;
 
     const existingUser = await Users.findOne({ where: { email } });
     if (existingUser) {
@@ -100,7 +108,18 @@ async function register(req, res, next) {
     }
 
     const hashedPassword = await hash(password, 10);
-    await Users.create({ name, lastname, email, password: hashedPassword });
+    await Users.create({
+      firstname,
+      middlename,
+      lastname,
+      second_lastname,
+      address,
+      phone_number,
+      email,
+      password: hashedPassword,
+      status,
+      role_id,
+    });
 
     res.status(201).json({
       status: "ok",
@@ -124,13 +143,12 @@ async function register(req, res, next) {
  */
 async function logout(req, res, next) {
   try {
-      //#swagger.tags = ['Auth']
+    //#swagger.tags = ['Auth']
     res.clearCookie("token");
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     next(error);
   }
 }
-
 
 export { login, register, logout };
