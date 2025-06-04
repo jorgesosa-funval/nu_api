@@ -1,3 +1,4 @@
 export const migrations = [
- "Users",  
+  "Roles",
+  "Users",  
 ];
