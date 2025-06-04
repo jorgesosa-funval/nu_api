@@ -3,4 +3,5 @@ export const routes = [
   { name: "Users", is_protected: true },
   {"name":"Roles","is_protected":true},
   {"name":"Proffessions","is_protected":true},
+  {"name":"Events","is_protected":true},
 ];
