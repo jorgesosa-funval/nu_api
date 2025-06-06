@@ -30,6 +30,7 @@ async function login(req, res, next) {
     const { jwtSecret } = config;
     const { email, password } = req.body;
 
+
     if (!email || !password) {
       return res
         .status(400)
@@ -37,6 +38,7 @@ async function login(req, res, next) {
     }
 
     const user = await Users.findOne({ where: { email } });
+    console.log(user);
     if (!user || user.status !== "active") {
       return res.status(401).json({ message: "Invalid credentials" });
     }

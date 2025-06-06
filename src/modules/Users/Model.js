@@ -72,7 +72,7 @@ Users.init(
       defaultValue: 1,
       get() {
         const value = this.getDataValue("status");
-        return getStatusName(value);
+        return value ? "active" : "inactive";
       },
     },
     role_id: {

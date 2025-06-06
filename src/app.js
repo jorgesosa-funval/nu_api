@@ -5,11 +5,15 @@ import appConfig from "#config/index.js";
 import routes from "#routes/index.js";
 import { ErrorHandler, LogError } from "#middlewares/errorMiddleware.js";
 
-
 const app = express();
 
 // Application middlewares
-app.use(cors(appConfig.corsOptions));
+app.use(
+  cors({
+    ...appConfig.corsOptions,
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
